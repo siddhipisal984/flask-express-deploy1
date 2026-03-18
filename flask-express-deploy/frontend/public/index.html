@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Flask + Express Deploy</title>
+  <style>
+    body { font-family: Arial, sans-serif; max-width: 800px; margin: 50px auto; padding: 0 20px; background: #f5f5f5; }
+    h1 { color: #333; }
+    button { padding: 10px 20px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 16px; }
+    button:hover { background: #0056b3; }
+    #result { margin-top: 20px; padding: 15px; background: white; border-radius: 4px; border-left: 4px solid #007bff; white-space: pre-wrap; }
+    .status { display: inline-block; padding: 4px 10px; border-radius: 12px; font-size: 14px; background: #28a745; color: white; }
+  </style>
+</head>
+<body>
+  <h1>Flask + Express Deployment Demo</h1>
+  <p>Express Frontend <span class="status">Running</span></p>
+  <button onclick="fetchData()">Fetch Data from Flask Backend</button>
+  <div id="result">Click the button to test the Flask backend connection...</div>
+
+  <script>
+    async function fetchData() {
+      const result = document.getElementById('result');
+      result.textContent = 'Loading...';
+      try {
+        const res = await fetch('/api/data');
+        const data = await res.json();
+        result.textContent = JSON.stringify(data, null, 2);
+      } catch (err) {
+        result.textContent = 'Error: ' + err.message;
+      }
+    }
+  </script>
+</body>
+</html>
