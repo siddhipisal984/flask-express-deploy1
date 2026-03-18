@@ -3,7 +3,8 @@
 Three deployment scenarios for a Flask backend + Express frontend stack.
 
 - GitHub Repo: https://github.com/siddhipisal984/flask-express-deploy1
-- Deployed URL: *(add after going live)*
+- Flask Backend URL: https://flask-backend-ch7h.onrender.com
+- Express Frontend URL: https://express-frontend-ntj1.onrender.com
 
 ---
 
