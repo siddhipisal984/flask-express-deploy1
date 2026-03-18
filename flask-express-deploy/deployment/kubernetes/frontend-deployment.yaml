@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: express-frontend
+  labels:
+    app: express-frontend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: express-frontend
+  template:
+    metadata:
+      labels:
+        app: express-frontend
+    spec:
+      containers:
+        - name: express-frontend
+          image: express-frontend:latest
+          imagePullPolicy: Never        # use local minikube image
+          ports:
+            - containerPort: 3000
+          env:
+            - name: PORT
+              value: "3000"
+            - name: FLASK_URL
+              value: "http://flask-backend:5000"   # k8s service DNS
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 3000
+            initialDelaySeconds: 5
+            periodSeconds: 5

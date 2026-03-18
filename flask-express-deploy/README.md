@@ -101,6 +101,59 @@ bash deployment/docker-ecs/cleanup.sh
 
 ---
 
+## Scenario 4 — Kubernetes with Minikube (Assignment 7)
+
+Run Flask + Express locally in a Kubernetes cluster using Minikube.
+
+**Prerequisites:**
+- [Minikube](https://minikube.sigs.k8s.io/docs/start/) installed
+- [kubectl](https://kubernetes.io/docs/tasks/tools/) installed
+- Docker Desktop running
+
+**One-command deploy:**
+```bash
+cd deployment/kubernetes
+bash deploy.sh
+```
+
+**Or step by step:**
+```bash
+# 1. Start minikube
+minikube start
+
+# 2. Point Docker to minikube's daemon
+eval $(minikube docker-env)
+
+# 3. Build images inside minikube
+docker build -t flask-backend:latest ../../backend/
+docker build -t express-frontend:latest ../../frontend/
+
+# 4. Apply all manifests
+kubectl apply -f backend-deployment.yaml
+kubectl apply -f backend-service.yaml
+kubectl apply -f frontend-deployment.yaml
+kubectl apply -f frontend-service.yaml
+
+# 5. Check everything is running
+kubectl get pods
+kubectl get services
+kubectl get deployments
+
+# 6. Open frontend in browser
+minikube service express-frontend --url
+```
+
+**Useful commands for screenshots:**
+```bash
+kubectl get pods
+kubectl get services
+kubectl get deployments
+kubectl describe pod <pod-name>
+minikube dashboard
+```
+
+---
+
 ## Cost Tips
 
 - Stop EC2 instances when not in use
