@@ -16,18 +16,43 @@ spec:
     spec:
       containers:
         - name: express-frontend
-          image: express-frontend:latest
-          imagePullPolicy: Never        # use local minikube image
+          # node base image + inline express app (no Docker Hub account needed)
+          image: node:20-alpine
+          command: ["/bin/sh", "-c"]
+          args:
+            - |
+              mkdir /app && cd /app &&
+              npm init -y &&
+              npm install express axios &&
+              cat << 'EOF' > server.js
+              const express = require('express');
+              const axios = require('axios');
+              const app = express();
+              const FLASK_URL = process.env.FLASK_URL || 'http://flask-backend:5000';
+              app.get('/', (req, res) => {
+                res.send(`<html><body>
+                  <h1>Flask + Express on Kubernetes</h1>
+                  <p>Express Frontend <span style="color:green">Running</span></p>
+                  <button onclick="fetch('/api/data').then(r=>r.json()).then(d=>document.getElementById('out').innerText=JSON.stringify(d,null,2))">
+                    Fetch Data from Flask Backend
+                  </button>
+                  <pre id="out"></pre>
+                </body></html>`);
+              });
+              app.get('/api/data', async (req, res) => {
+                try {
+                  const r = await axios.get(FLASK_URL + '/api/data');
+                  res.json(r.data);
+                } catch(e) {
+                  res.status(500).json({ error: e.message });
+                }
+              });
+              app.get('/health', (req, res) => res.json({ status: 'ok' }));
+              app.listen(3000, '0.0.0.0', () => console.log('Express running on port 3000'));
+              EOF
+              node server.js
           ports:
             - containerPort: 3000
           env:
-            - name: PORT
-              value: "3000"
             - name: FLASK_URL
-              value: "http://flask-backend:5000"   # k8s service DNS
-          readinessProbe:
-            httpGet:
-              path: /health
-              port: 3000
-            initialDelaySeconds: 5
-            periodSeconds: 5
+              value: "http://flask-backend:5000"

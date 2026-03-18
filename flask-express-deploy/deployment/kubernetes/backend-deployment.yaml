@@ -16,13 +16,24 @@ spec:
     spec:
       containers:
         - name: flask-backend
-          image: flask-backend:latest
-          imagePullPolicy: Never        # use local minikube image
+          # python base image + inline flask app (no Docker Hub account needed)
+          image: python:3.11-slim
+          command: ["/bin/sh", "-c"]
+          args:
+            - |
+              pip install flask flask-cors gunicorn -q &&
+              cat << 'EOF' > /app.py
+              from flask import Flask, jsonify
+              from flask_cors import CORS
+              app = Flask(__name__)
+              CORS(app)
+              @app.route('/')
+              def home():
+                  return jsonify({"message": "Flask Backend is running!", "status": "ok"})
+              @app.route('/api/data')
+              def data():
+                  return jsonify({"items": ["item1", "item2", "item3"], "source": "flask-backend"})
+              EOF
+              gunicorn --bind 0.0.0.0:5000 app:app
           ports:
             - containerPort: 5000
-          readinessProbe:
-            httpGet:
-              path: /
-              port: 5000
-            initialDelaySeconds: 5
-            periodSeconds: 5
