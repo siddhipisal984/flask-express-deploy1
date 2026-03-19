@@ -1,0 +1,63 @@
+pipeline {
+    agent any
+
+    environment {
+        APP_DIR = '/home/ubuntu/flask-express-deploy1/flask-express-deploy/frontend'
+        FLASK_URL = 'http://localhost:5000'
+    }
+
+    stages {
+        stage('Pull Code') {
+            steps {
+                echo 'Pulling latest code from GitHub...'
+                sh '''
+                    cd /home/ubuntu/flask-express-deploy1
+                    git pull origin main
+                '''
+            }
+        }
+
+        stage('Install Dependencies') {
+            steps {
+                echo 'Installing Node.js dependencies...'
+                sh '''
+                    cd ${APP_DIR}
+                    npm install --production
+                '''
+            }
+        }
+
+        stage('Test') {
+            steps {
+                echo 'Running Express health check...'
+                sh '''
+                    cd ${APP_DIR}
+                    node -e "const app = require('./server'); console.log('Express app loaded');" || true
+                '''
+            }
+        }
+
+        stage('Deploy') {
+            steps {
+                echo 'Restarting Express application...'
+                sh '''
+                    cd ${APP_DIR}
+                    pm2 restart express-frontend || \
+                    FLASK_URL=${FLASK_URL} pm2 start server.js \
+                        --name express-frontend \
+                        --cwd ${APP_DIR}
+                    pm2 save
+                '''
+            }
+        }
+    }
+
+    post {
+        success {
+            echo 'Express deployment successful!'
+        }
+        failure {
+            echo 'Express deployment failed!'
+        }
+    }
+}

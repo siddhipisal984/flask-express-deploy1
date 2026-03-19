@@ -1,0 +1,62 @@
+pipeline {
+    agent any
+
+    environment {
+        APP_DIR = '/home/ubuntu/flask-express-deploy1/flask-express-deploy/backend'
+        VENV_DIR = '/home/ubuntu/flask-express-deploy1/flask-express-deploy/backend/venv'
+    }
+
+    stages {
+        stage('Pull Code') {
+            steps {
+                echo 'Pulling latest code from GitHub...'
+                sh '''
+                    cd /home/ubuntu/flask-express-deploy1
+                    git pull origin main
+                '''
+            }
+        }
+
+        stage('Install Dependencies') {
+            steps {
+                echo 'Installing Python dependencies...'
+                sh '''
+                    cd ${APP_DIR}
+                    python3 -m venv venv
+                    ${VENV_DIR}/bin/pip install -r requirements.txt
+                '''
+            }
+        }
+
+        stage('Test') {
+            steps {
+                echo 'Running Flask health check...'
+                sh '''
+                    ${VENV_DIR}/bin/python -c "from app import app; print('Flask app imported successfully')"
+                '''
+            }
+        }
+
+        stage('Deploy') {
+            steps {
+                echo 'Restarting Flask application...'
+                sh '''
+                    pm2 restart flask-backend || \
+                    pm2 start "${VENV_DIR}/bin/gunicorn --bind 0.0.0.0:5000 app:app" \
+                        --name flask-backend \
+                        --cwd ${APP_DIR}
+                    pm2 save
+                '''
+            }
+        }
+    }
+
+    post {
+        success {
+            echo 'Flask deployment successful!'
+        }
+        failure {
+            echo 'Flask deployment failed!'
+        }
+    }
+}
