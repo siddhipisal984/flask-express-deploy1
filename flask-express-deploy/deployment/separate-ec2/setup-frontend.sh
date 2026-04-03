@@ -22,7 +22,7 @@ sudo apt-get install -y nginx
 echo ">>> Cloning repo..."
 cd /home/ubuntu
 git clone https://github.com/siddhipisal984/flask-express-deploy1.git
-cd flask-express-deploy1/frontend
+cd flask-express-deploy1/flask-express-deploy/frontend
 npm install --production
 
 echo ">>> Creating Express systemd service..."
@@ -33,7 +33,7 @@ After=network.target
 
 [Service]
 User=ubuntu
-WorkingDirectory=/home/ubuntu/flask-express-deploy1/frontend
+WorkingDirectory=/home/ubuntu/flask-express-deploy1/flask-express-deploy/frontend
 Environment="PORT=3000"
 Environment="FLASK_URL=http://${FLASK_IP}:5000"
 ExecStart=/usr/bin/node server.js

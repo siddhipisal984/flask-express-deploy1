@@ -27,7 +27,7 @@ sudo apt-get install -y nginx
 echo ">>> Cloning repository..."
 cd /home/ubuntu
 git clone https://github.com/siddhipisal984/flask-express-deploy1.git
-cd flask-express-deploy1
+cd flask-express-deploy1/flask-express-deploy
 
 # ---- Setup Flask backend ----
 echo ">>> Setting up Flask backend..."
@@ -53,9 +53,9 @@ After=network.target
 
 [Service]
 User=ubuntu
-WorkingDirectory=/home/ubuntu/flask-express-deploy1/backend
-Environment="PATH=/home/ubuntu/flask-express-deploy1/backend/venv/bin"
-ExecStart=/home/ubuntu/flask-express-deploy1/backend/venv/bin/gunicorn --bind 127.0.0.1:5000 app:app
+WorkingDirectory=/home/ubuntu/flask-express-deploy1/flask-express-deploy/backend
+Environment="PATH=/home/ubuntu/flask-express-deploy1/flask-express-deploy/backend/venv/bin"
+ExecStart=/home/ubuntu/flask-express-deploy1/flask-express-deploy/backend/venv/bin/gunicorn --bind 127.0.0.1:5000 app:app
 Restart=always
 
 [Install]
@@ -71,7 +71,7 @@ After=network.target flask-backend.service
 
 [Service]
 User=ubuntu
-WorkingDirectory=/home/ubuntu/flask-express-deploy1/frontend
+WorkingDirectory=/home/ubuntu/flask-express-deploy1/flask-express-deploy/frontend
 Environment="PORT=3000"
 Environment="FLASK_URL=http://127.0.0.1:5000"
 ExecStart=/usr/bin/node server.js

@@ -15,7 +15,7 @@ sudo apt-get install -y python3 python3-pip python3-venv
 echo ">>> Cloning repo..."
 cd /home/ubuntu
 git clone https://github.com/siddhipisal984/flask-express-deploy1.git
-cd flask-express-deploy1/backend
+cd flask-express-deploy1/flask-express-deploy/backend
 
 echo ">>> Setting up virtualenv..."
 python3 -m venv venv
@@ -31,9 +31,9 @@ After=network.target
 
 [Service]
 User=ubuntu
-WorkingDirectory=/home/ubuntu/flask-express-deploy1/backend
-Environment="PATH=/home/ubuntu/flask-express-deploy1/backend/venv/bin"
-ExecStart=/home/ubuntu/flask-express-deploy1/backend/venv/bin/gunicorn --bind 0.0.0.0:5000 app:app
+WorkingDirectory=/home/ubuntu/flask-express-deploy1/flask-express-deploy/backend
+Environment="PATH=/home/ubuntu/flask-express-deploy1/flask-express-deploy/backend/venv/bin"
+ExecStart=/home/ubuntu/flask-express-deploy1/flask-express-deploy/backend/venv/bin/gunicorn --bind 0.0.0.0:5000 app:app
 Restart=always
 
 [Install]

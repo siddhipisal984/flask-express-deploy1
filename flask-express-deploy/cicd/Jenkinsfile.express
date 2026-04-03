@@ -29,10 +29,10 @@ pipeline {
 
         stage('Test') {
             steps {
-                echo 'Running Express health check...'
+                echo 'Running Express syntax check...'
                 sh '''
                     cd ${APP_DIR}
-                    node -e "const app = require('./server'); console.log('Express app loaded');" || true
+                    node --check server.js && echo "Express syntax OK"
                 '''
             }
         }
